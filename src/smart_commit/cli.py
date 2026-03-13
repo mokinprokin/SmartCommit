@@ -58,19 +58,15 @@ def ensure_git_setup(expected_url):
 
 def switch_branch(branch):
     """Безопасно переключает ветку, учитывая пустые (unborn) репозитории."""
-    # Проверяем, есть ли уже коммиты в репозитории
     has_commits = run_shell("git rev-parse HEAD", silent=True).returncode == 0
 
     if not has_commits:
-        # Если репозиторий пустой, просто переименовываем начальную ветку
         run_shell(f"git branch -M {branch}", silent=True)
     else:
-        # Если коммиты есть, безопасно переключаемся или создаем ветку
         run_shell(f"git checkout -B {branch}", silent=True)
 
 
 def main():
-    # Настраиваем аргументы командной строки
     parser = argparse.ArgumentParser(description="Smart Commit & Push Tool")
     parser.add_argument(
         "-b", "--branch", help="Указать ветку (пропустит вопрос о ветке)"
@@ -95,23 +91,18 @@ def main():
 
     print("\n--- 🚀 SMART COMMIT PRE-CHECK ---")
 
-    # Логика определения ветки
     branch = args.branch
     if not branch:
-        # Узнаем текущую ветку у Git
         current_branch = run_shell(
             "git branch --show-current", silent=True
         ).stdout.strip()
 
         if current_branch:
-            # Если мы уже в ветке, предлагаем её по умолчанию
             user_input = input(f"🌿 Ветка [{current_branch}]: ").strip()
             branch = user_input if user_input else current_branch
         else:
-            # Если репозиторий совсем пустой и ветки еще нет
             branch = input("🌿 Название ветки (например, main): ").strip()
 
-    # Логика определения сообщения
     message = args.message
     if not message:
         message = input("📝 Сообщение коммита: ").strip()
@@ -120,7 +111,6 @@ def main():
         print("❌ Ошибка: Ветка и сообщение не могут быть пустыми.")
         sys.exit(1)
 
-    # Безопасное переключение ветки
     switch_branch(branch)
 
     print("\n--- 🛠 ЗАПУСК ПРОВЕРОК ---")
