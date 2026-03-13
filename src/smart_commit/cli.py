@@ -99,7 +99,9 @@ def main() -> None:
         config = get_config()
         repo_url = config.get("repository_url")
         commands: list[str] = config.get("commands", [])
-
+        protected_branches = config.get(
+            "protected_branches", ["main", "master", "prod", "production"]
+        )
         if not repo_url:
             raise SmartCommitError(
                 "В pyproject.toml не указан [tool.smart_commit].repository_url"
@@ -128,6 +130,27 @@ def main() -> None:
 
         if not branch or not message:
             raise SmartCommitError("Ветка и сообщение не могут быть пустыми.")
+
+        if branch in protected_branches:
+            print(
+                f"\n⚠️  ВНИМАНИЕ: Вы пытаетесь запушить в защищенную ветку '{branch}'."
+            )
+            choice = (
+                input("Продолжить? [y (да) / n (отмена) / b (создать новую ветку)]: ")
+                .lower()
+                .strip()
+            )
+
+            if choice == "n":
+                raise SmartCommitError("Операция отменена пользователем.")
+            elif choice == "b":
+                new_branch = input("Введите название новой ветки: ").strip()
+                if not new_branch:
+                    raise SmartCommitError("Название ветки не может быть пустым.")
+                branch = new_branch
+                print(f"🌿 Переключаюсь на новую ветку '{branch}'...")
+            elif choice != "y":
+                raise SmartCommitError("Некорректный ввод. Операция отменена.")
 
         switch_branch(branch)
 
