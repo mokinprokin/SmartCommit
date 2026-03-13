@@ -76,6 +76,7 @@ smart-commit
 4. **Optimized Push**: Automatically handles `add` and `commit`. If the remote branch has moved forward, it helps you `rebase` to ensure a linear, clean history.
 
 ---
+![Демонстрация smart-commit](assets/demonstration.gif)
 
 ## 📄 License
 Distributed under the MIT License. Feel free to use, modify, and share!
