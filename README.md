@@ -13,25 +13,10 @@ Smart Commit Tool is a robust Git wrapper designed for developers who value code
 ## 📦 Installation
 
 ```bash
-pip install smart-commit
+pip install smart-commit-tool
 ```
 
 After installation, the `smart-commit` command will be available in your terminal.
-
-## 🚀 Usage
-
-Simply run the command in your project root:
-
-```bash
-smart-commit
-```
-
-### CLI Arguments
-
-| Argument      | Description                                       |
-|---------------|---------------------------------------------------|
-| `-b, --branch`| Specify the target branch (skips interactive prompt) |
-| `-m, --message`| Set the commit message (skips interactive prompt) |
 
 ## 🔧 Configuration
 
@@ -48,6 +33,23 @@ commands = [
 ]
 ```
 
+## 🚀 Usage
+
+Simply run the command in your project root:
+
+```bash
+smart-commit
+```
+
+### CLI Arguments
+
+| Argument      | Description                                       |
+|---------------|---------------------------------------------------|
+| `-b, --branch`| Specify the target branch (skips interactive prompt) |
+| `-m, --message`| Set the commit message (skips interactive prompt) |
+
+
+
 ### How it works:
 
 1. **Environment Check**: Ensures Git is initialized and the remote URL is correct.
@@ -60,7 +62,6 @@ commands = [
 - Python 3.11+
 - **Colorama**: For cross-platform terminal styling.
 - **Tomli/Tomllib**: For seamless configuration parsing.
-- **Hatchling**: Modern build backend.
 
 ## 📄 License
 
