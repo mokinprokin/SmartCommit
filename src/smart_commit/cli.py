@@ -131,14 +131,26 @@ def main():
 
     print("\n--- ✅ ВСЕ ПРОВЕРКИ ПРОЙДЕНЫ. ПУШИМ... ---")
 
-    success = (
-        run_shell("git add .").returncode == 0
-        and run_shell(f'git commit -m "{message}"').returncode == 0
-        and run_shell(f"git push -u origin {branch}").returncode == 0
-    )
+    if run_shell("git add .").returncode != 0:
+        print("❌ Ошибка при выполнении git add")
+        sys.exit(1)
 
-    if success:
-        print(f"\n🎉 Победа! Код проверен и улетел в ветку '{branch}'.")
+    if run_shell(f'git commit -m "{message}"').returncode != 0:
+        print("ℹ️  Нет изменений для коммита или ошибка коммита.")
+
+    print("📥 Синхронизация с GitHub (pull --rebase)...")
+    pull_res = run_shell(f"git pull origin {branch} --rebase", silent=True)
+
+    if pull_res.returncode != 0:
+        print("🛑 Конфликт при подтягивании изменений!")
+        print("Нужно вручную исправить конфликты (git pull) и запустить скрипт снова.")
+        sys.exit(1)
+
+    print(f"📤 Отправка изменений в {branch}...")
+    push_res = run_shell(f"git push -u origin {branch}")
+
+    if push_res.returncode == 0:
+        print(f"\n🎉 Победа! Код проверен, синхронизирован и улетел в '{branch}'.")
     else:
         print("\n❌ Упс! Что-то пошло не так при отправке в Git.")
 
