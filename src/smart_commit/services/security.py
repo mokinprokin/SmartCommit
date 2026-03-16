@@ -13,6 +13,7 @@ __pycache__/
 venv/
 env/
 .env*
+*.env
 !.env.example
 .vscode/
 .idea/
@@ -39,16 +40,20 @@ node_modules/
     @classmethod
     def check_env_leaks(cls):
         """
-        Scans for .env* files and uses Git to check if they are ignored.
+        Scans for .env files (e.g. .env.local, .test.env, prod.env)
+        and uses Git to check if they are ignored.
         Prevents accidental leaks of secrets.
         """
         Console.info("🛡️ Scanning for potential secret leaks (.env files)...")
 
+        raw_files = set(Path(".").rglob(".env*")) | set(Path(".").rglob("*.env"))
+
         env_files = [
             f
-            for f in Path(".").rglob(".env*")
-            if not any(
-                part in ["venv", ".venv", "env", "node_modules", ".git"]
+            for f in raw_files
+            if f.is_file()
+            and not any(
+                part in ["venv", ".venv", "env", "node_modules", ".git", "__pycache__"]
                 for part in f.parts
             )
         ]

@@ -46,6 +46,12 @@ class GitService:
                 raise GitOperationError(f"Failed to switch branch: {error_msg}")
 
     @classmethod
+    def has_any_changes(cls) -> bool:
+        """Checks if there are any staged, unstaged, or untracked changes."""
+        res = cls._run(["git", "status", "--porcelain"])
+        return bool(res.stdout.strip())
+
+    @classmethod
     def has_staged_changes(cls) -> bool:
         """Checks if there are files already in the staging area."""
         res = cls._run(["git", "diff", "--cached", "--quiet"])
