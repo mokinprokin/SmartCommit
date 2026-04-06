@@ -1,0 +1,67 @@
+name: Smart Commit CI Pipeline
+
+on:
+  push:
+    branches: [ "main", "master", "prod", "release" ]
+  pull_request:
+    branches: [ "main", "master", "prod", "release" ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+        - name: Checkout Repository
+          uses: actions/checkout@v4
+
+        - name: Set up Python ${{ matrix.python-version }}
+          uses: actions/setup-python@v5
+          with:
+            python-version: ${{ matrix.python-version }}
+            cache: 'pip'
+
+        - name: Install Dependencies (Adaptive Smart Installer)
+          run: |
+            python -m pip install --upgrade pip
+            
+            # Ensure local bin is in PATH for all subsequent steps
+            echo "$HOME/.local/bin" >> $GITHUB_PATH
+            
+            echo "🔍 Detecting package manager..."
+            
+            if [ -f "poetry.lock" ] || [ -f "pyproject.toml" ] && grep -q "tool.poetry" "pyproject.toml"; then
+                echo "🚀 Poetry detected!"
+                pip install poetry
+                poetry config virtualenvs.create false
+                poetry install --no-interaction --no-ansi
+                
+            elif [ -f "Pipfile.lock" ] || [ -f "Pipfile" ]; then
+                echo "🚀 Pipenv detected!"
+                pip install pipenv
+                pipenv install --system --dev
+                
+            elif [ -f "pdm.lock" ] || [ -f "pyproject.toml" ] && grep -q "tool.pdm" "pyproject.toml"; then
+                echo "🚀 PDM detected!"
+                pip install pdm
+                pdm config python.use_venv false
+                pdm install
+                
+            elif [ -f "requirements.txt" ]; then
+                echo "🚀 Standard requirements.txt detected!"
+                pip install -r requirements.txt
+                if [ -f "setup.py" ]; then pip install -e .; fi
+                
+            elif [ -f "pyproject.toml" ]; then
+                echo "🚀 Standard PEP 621 pyproject.toml detected!"
+                pip install -e .[dev] || pip install -e .
+                
+            else
+                echo "⚠️ No known package manager found. Skipping dependency installation."
+            fi
+
+        - name: Run 'ruff check .'
+          run: ruff check .
