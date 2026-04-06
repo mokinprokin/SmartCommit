@@ -24,7 +24,7 @@
 ## 📦 Installation
 
 ```bash
-pip install smart-commit
+pip install smart-commit-tool
 ```
 
 ---
