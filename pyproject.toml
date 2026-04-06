@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "smart-commit-tool"
-version = "3.0.2"
+version = "3.0.3"
 description = "Automated pre-push workflow manager with built-in code quality enforcement and smart branch protection."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -17,9 +17,10 @@ dependencies = [
 smart-commit = "smart_commit.cli:main"
 
 [tool.smart_commit]
+language = "en"
 repository_url = "https://github.com/mokinprokin/SmartCommit.git"
 commands = ["ruff check ."]
-protected_branches = ["master", "prod", "release"]
+protected_branches = [ "master", "prod", "release"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/smart_commit"]

@@ -2,6 +2,7 @@ import os
 import re
 import sys
 from .logger import logger
+from .i18n import i18n
 
 SECRET_PATTERNS = [
     re.compile(
@@ -10,7 +11,14 @@ SECRET_PATTERNS = [
     re.compile(r"-----BEGIN (RSA|OPENSSH|PRIVATE) KEY-----"),
 ]
 
-SUSPICIOUS_FILES = [".env", ".env.local", "secrets.json"]
+SUSPICIOUS_FILES = [
+    ".env",
+    ".env.local",
+    "secrets.json",
+    ".env.test",
+    ".test.env",
+    "credentials.json",
+]
 
 
 def check_secrets(staged_files: list[str]) -> bool:
@@ -41,19 +49,20 @@ def check_secrets(staged_files: list[str]) -> bool:
     if not secrets_found:
         return False
 
-    logger.warning("ОБНАРУЖЕНЫ ВОЗМОЖНЫЕ УТЕЧКИ СЕКРЕТОВ!")
+    logger.warning(i18n.t("secret_warn"))
     for s in secrets_found:
         logger.warning(f" -> {s}")
 
-    answer = input("Добавить эти файлы в .gitignore? [y/N]: ").strip().lower()
+    answer = input(i18n.t("gitignore_ask")).strip().lower()
     if answer == "y":
         with open(".gitignore", "a", encoding="utf-8") as f:
-            f.write("\n# Auto-added by Smart Commit\n")
+            comment = i18n.t("gitignore_comment")
+            f.write(f"\n# {comment}\n")
             for s in secrets_found:
                 f.write(f"{s}\n")
 
-        logger.success("Файлы добавлены в .gitignore.")
+        logger.success(i18n.t("gitignore_success"))
         return True
 
-    logger.error("Коммит прерван из-за угрозы безопасности. Очистите секреты вручную.")
+    logger.error(i18n.t("security_abort"))
     sys.exit(1)
