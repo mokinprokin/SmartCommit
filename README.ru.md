@@ -2,7 +2,6 @@
 
 [English](README.md) | [Русский](README.ru.md)
 
-[![PyPI version](https://img.shields.io/pypi/v/smart-commit?color=blue&logo=pypi&logoColor=white)](https://pypi.org/project/smart-commit/)
 [![Python Version](https://img.shields.io/badge/python-3.10+-blue?logo=python&logoColor=white)](https://pypi.org/project/smart-commit/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -25,7 +24,7 @@
 ## 📦 Установка
 
 ```bash
-pip install smart-commit
+pip install smart-commit-tool
 ```
 
 ---
